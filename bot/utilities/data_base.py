@@ -13,30 +13,32 @@ class DatabaseManager:
         return cls._instance
 
     # инициализация БД
-    def _init_db(self, host='127.0.0.1', user='goldman', password='qweasdqwe1', database='promo_data'):
+    def _init_db(self, host='monorail.proxy.rlwy.net', user='root', password='H-D-1A-dFF-c31g-6d12BbA5gbfc314-',
+                 database='railway', port=45661):
         self.host = host
         self.user = user
         self.password = password
         self.database = database
+        self.port = port
 
     # функция подключения к БД
     def connect_to_database(self):
         while True:
             try:
-                # создание туннеля
-                self.tunnel = SSHTunnelForwarder(
-                    ("192.168.0.231", 22),
-                    ssh_username=self.user,
-                    ssh_password=self.password,
-                    remote_bind_address=('127.0.0.1', 3306)
-                )
-                self.tunnel.start()
+                # # создание туннеля
+                # self.tunnel = SSHTunnelForwarder(
+                #     ("192.168.0.231", 22),
+                #     ssh_username=self.user,
+                #     ssh_password=self.password,
+                #     remote_bind_address=('127.0.0.1', 3306)
+                # )
+                # self.tunnel.start()
 
                 # подключение к БД
                 self.connection = pymysql.connect(
                     host=self.host,
-                    port=self.tunnel.local_bind_port,
-                    # port=3306,
+                    # port=self.tunnel.local_bind_port,
+                    port=self.port,
                     user=self.user,
                     password=self.password,
                     database=self.database
@@ -52,7 +54,7 @@ class DatabaseManager:
     def close_connection(self):
         self.cursor.close()
         self.connection.close()
-        self.tunnel.stop()
+        # self.tunnel.stop()
 
     # добавление новых пользователей
     def add_users(self, u_id, u_name, u_nick):
